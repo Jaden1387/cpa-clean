@@ -7,55 +7,73 @@
 - 实时日志与进度查看
 - 清理结果统计（扫描数、命中数、删除数、失败数）
 
-项目适合个人维护与团队协作，也适合 fork 后二次开发。
-
-
-
+项目适合个人维护与团队协作，也适合二次开发。
 ## 功能概览
 
-- 支持按规则识别异常 token
-- 支持可选主动探测（用于识别潜在失效 token）
-- 支持额外 401 补删
-- 支持并发探测与并发删除
-- 支持任务异步执行与轮询查询
+- 按规则识别异常 token
+- 可选主动探测（识别潜在失效 token）
+- 额外 401 补删
+- 并发探测与并发删除
+- 异步任务执行与轮询查询
 
 ## 项目结构
 
 ```text
 .
-├─ cpa_codex_cleanup_engine.py   # 清理引擎核心逻辑
-├─ cpa_codex_cleanup_web.py      # Web UI 后端（任务管理 + HTTP API）
+├─ cpa_codex_cleanup_engine.py      # 清理引擎核心逻辑
+├─ cpa_codex_cleanup_web.py         # Web UI 后端（任务管理 + HTTP API）
 ├─ web/
-│  └─ index.html           # Web UI 前端
-├─ run_cpa_codex_cleanup.bat     # Windows 一键启动脚本
-└─ README.md
+│  └─ index.html                    # Web UI 前端
+├─ run_cpa_codex_cleanup.bat        # Windows 一键启动脚本
+├─ README.md
+└─ LICENSE
 ```
 
 ## 环境要求
 
 - Python 3.10+
-- 依赖：
-  - `curl_cffi`
+- 依赖库：`curl_cffi`
 
-安装依赖示例：
+安装依赖：
 
 ```bash
 pip install curl_cffi
 ```
 
-## 一键启动（Windows）
+## 快速开始（必须先下载项目）
 
-直接双击：
+运行一键脚本前，必须先把项目下载到本地。
 
-- `run_cpa_codex_cleanup.bat`
+### 1) 下载项目
 
-或在终端执行：
+方式 A：Git 克隆
+
+```bash
+git clone https://github.com/qcmuu/cpa-codex-cleanup.git
+cd cpa-codex-cleanup
+```
+
+方式 B：下载 ZIP
+
+1. 打开仓库主页：`https://github.com/qcmuu/cpa-codex-cleanup`
+2. 点击 `Code` -> `Download ZIP`
+3. 解压 ZIP 后进入项目目录
+
+### 2) 安装依赖
+
+```bash
+pip install curl_cffi
+```
+
+### 3) 一键启动（Windows）
+
+双击 `run_cpa_codex_cleanup.bat`，或在终端执行：
 
 ```powershell
 .\run_cpa_codex_cleanup.bat
 ```
 
-默认地址：
+启动后默认访问：
 
 - `http://127.0.0.1:8123`
 
@@ -65,24 +83,29 @@ pip install curl_cffi
 python cpa_codex_cleanup_web.py --host 127.0.0.1 --port 8123
 ```
 
-## Web 使用说明
+## Web 使用教程
 
 1. 打开 `http://127.0.0.1:8123`
-2. 填写 `Management URL`（默认 `http://127.0.0.1:8317/management.html`）
-3. 填写 `Management Token`
-4. 点击 `执行清理`
-5. 在右侧实时日志面板查看执行进度
+2. `Management URL` 保持默认或改为你的管理页地址（默认：`http://127.0.0.1:8317/management.html`）
+3. 输入 `Management Token`（不带 `Bearer ` 前缀）
+4. 按需调整并发与超时参数
+5. 点击 `执行清理`
+6. 右侧 `实时日志` 查看进度
+7. 下方统计卡片查看结果：
+- 扫描总数
+- 命中数量
+- 主流程删除
+- 401 补删
+- 总删除
+- 失败数
 
-## 后端 API（给二次开发用）
+## 后端 API（供二次开发）
 
-- `GET /api/defaults`
-  - 获取默认配置
-- `POST /api/tasks`
-  - 提交清理任务
-- `GET /api/tasks/{task_id}`
-  - 查询任务状态和日志
+- `GET /api/defaults`：获取默认配置
+- `POST /api/tasks`：提交清理任务
+- `GET /api/tasks/{task_id}`：查询任务状态与日志
 
-状态说明：
+状态值：
 
 - `running`：执行中
 - `completed`：执行完成
@@ -97,57 +120,16 @@ python cpa_codex_cleanup_web.py --host 127.0.0.1 --port 8123
 ### 2) `HTTP 404 Not Found`
 
 通常是 `management_url` 不正确。  
-请确认它是管理 API 根路径，而不是页面地址或子接口地址。
+请确认填写的是管理接口根路径（或可自动转换的 `.../management.html`）。
 
-### 3) 日志没变化
+### 3) 日志没有更新
 
-请检查：
+请依次检查：
 
-- 服务是否在运行
-- 任务是否真的提交成功
-- `task_id` 对应任务状态是否仍为 `running`
-
-## Fork 与协作
-
-### Fork
-
-1. 在 GitHub 点击 `Fork`
-2. 克隆你自己的仓库
-
-```bash
-git clone <your-fork-url>
-cd <repo>
-```
-
-3. 新建分支开发
-
-```bash
-git checkout -b feat/your-feature
-```
-
-4. 提交并推送
-
-```bash
-git add .
-git commit -m "feat: add xxx"
-git push origin feat/your-feature
-```
-
-5. 发起 Pull Request
-
-### 建议规范
-
-- 提交信息建议使用 `feat/fix/refactor/docs/chore` 前缀
-- 重要改动请在 PR 描述里说明影响范围与回滚方案
-- 涉及安全或 token 处理改动请重点评审
-
-## 安全建议
-
-- 不要把真实 token 写死到代码
-- 不要把 token 提交到 Git 仓库
-- 生产环境建议通过环境变量注入敏感信息
+- 服务是否正在运行
+- 任务是否已成功提交
+- 对应 `task_id` 状态是否仍为 `running`
 
 ## 许可证
 
-建议使用 MIT License。  
-如果你准备公开发布，请补充 `LICENSE` 文件后再对外共享。
+MIT License
