@@ -1,6 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import ConfigPanel from "@/components/ConfigPanel";
+import HeroHeader from "@/components/HeroHeader";
+import LogPanel from "@/components/LogPanel";
+
+const STORAGE_KEYS = {
+  management_url: "cpa_cleanup_management_url",
+  management_token: "cpa_cleanup_management_token",
+};
 
 const FIXED_CONFIG = {
   management_timeout: 15,
@@ -42,6 +50,9 @@ export default function HomePage() {
 
   const loadDefaults = async () => {
     try {
+      const savedUrl = localStorage.getItem(STORAGE_KEYS.management_url) || "";
+      const savedToken = localStorage.getItem(STORAGE_KEYS.management_token) || "";
+
       const resp = await fetch(apiUrl("/api/defaults"));
       const data = await resp.json();
       if (!resp.ok || !data.ok) {
@@ -50,8 +61,8 @@ export default function HomePage() {
       const d = data.defaults || {};
       setForm((prev) => ({
         ...prev,
-        management_url: "",
-        management_token: d.management_token || "",
+        management_url: savedUrl || "",
+        management_token: savedToken || d.management_token || "",
       }));
     } catch (err) {
       setStatus({ text: `加载默认配置失败: ${err.message}`, kind: "err" });
@@ -112,65 +123,25 @@ export default function HomePage() {
     loadDefaults();
   }, []);
 
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.management_url, form.management_url);
+    localStorage.setItem(STORAGE_KEYS.management_token, form.management_token);
+  }, [form.management_url, form.management_token]);
+
   return (
     <main className="shell">
-      <section className="hero">
-        <h1>小呆- CPA -账户清理工具</h1>
-      </section>
+      <HeroHeader />
 
       <section className="grid">
-        <section className="panel">
-          <h2>执行配置</h2>
-
-          <div className="field">
-            <label htmlFor="management_url">cpa 入口（例如 http://127.0.0.1:8317/management.html）</label>
-            <input
-              id="management_url"
-              type="text"
-              value={form.management_url}
-              onChange={(e) => onChange("management_url", e.target.value)}
-              placeholder="必填"
-            />
-          </div>
-
-          <div className="field">
-            <label htmlFor="management_token">cpa登录密码</label>
-            <input
-              id="management_token"
-              type="text"
-              value={form.management_token}
-              onChange={(e) => onChange("management_token", e.target.value)}
-              placeholder="不带 Bearer"
-            />
-          </div>
-
-          <div className="actions">
-            <button type="button" disabled={running} onClick={runCleanup}>
-              {running ? "执行中..." : "执行清理"}
-            </button>
-            <button type="button" disabled={running} onClick={loadDefaults}>
-              载入默认值
-            </button>
-            <span className={`status ${status.kind}`}>{status.text}</span>
-          </div>
-
-          <div className="summary">
-            <div className="metric"><div className="k">扫描总数</div><div className="v">{metrics.scanned_total}</div></div>
-            <div className="metric"><div className="k">命中数量</div><div className="v">{metrics.matched_total}</div></div>
-            <div className="metric"><div className="k">主流程删除</div><div className="v">{metrics.deleted_main}</div></div>
-            <div className="metric"><div className="k">401 补删</div><div className="v">{metrics.deleted_401}</div></div>
-            <div className="metric"><div className="k">总删除</div><div className="v">{metrics.deleted_total}</div></div>
-            <div className="metric"><div className="k">失败数</div><div className="v">{metrics.failed_total}</div></div>
-          </div>
-
-          <div className="hint">当前为 Next 全栈模式，前后端同域部署。</div>
-          <div className="hint">系统固定参数：管理超时15秒、探测超时8秒、探测并发12、删除并发8、最大探测120、主动探测开启。</div>
-        </section>
-
-        <section className="panel">
-          <h2>执行日志</h2>
-          <pre>{logs}</pre>
-        </section>
+        <ConfigPanel
+          form={form}
+          onChange={onChange}
+          running={running}
+          runCleanup={runCleanup}
+          status={status}
+          metrics={metrics}
+        />
+        <LogPanel logs={logs} />
       </section>
     </main>
   );

@@ -17,6 +17,9 @@ const plexMono = IBM_Plex_Mono({
 export const metadata = {
   title: "小呆- CPA -账户清理工具",
   description: "Next.js UI for CPA Codex Cleanup",
+  icons: {
+    icon: "/logo.ico",
+  },
 };
 
 export default function RootLayout({ children }) {
