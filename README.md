@@ -81,6 +81,30 @@ pip install curl_cffi
 python cpa_codex_cleanup_web.py --host 127.0.0.1 --port 8123
 ```
 
+## 部署到 Vercel
+
+仓库已包含 Vercel 所需结构：
+
+- `public/index.html`：静态前端
+- `api/defaults.py`：默认配置接口
+- `api/cleanup.py`：执行清理接口（单次请求执行）
+- `requirements.txt`：Python 依赖
+- `vercel.json`：函数配置（`api/cleanup.py` 最大执行时长 300 秒）
+
+部署步骤：
+
+```bash
+npm i -g vercel
+vercel login
+vercel
+vercel --prod
+```
+
+注意事项：
+
+- Vercel 是无状态 Serverless，当前部署模式不使用“任务轮询”，而是一次请求执行并返回结果。
+- 单次执行超过函数时长限制会超时，建议控制探测并发与 `max_active_probes`。
+
 ## API 一览
 
 | 方法 | 路径 | 说明 |

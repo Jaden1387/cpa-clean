@@ -20,7 +20,10 @@ from datetime import datetime
 from typing import Any, Callable, Optional
 from urllib.parse import urlparse, urlunparse
 
-from curl_cffi import requests
+try:
+    from curl_cffi import requests
+except Exception:  # pragma: no cover
+    import requests  # type: ignore[no-redef]
 
 
 STATUS_KEYWORDS = {
