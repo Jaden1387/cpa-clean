@@ -2,6 +2,15 @@
 
 import { useEffect, useState } from "react";
 
+const FIXED_CONFIG = {
+  management_timeout: 15,
+  probe_timeout: 8,
+  probe_workers: 12,
+  delete_workers: 8,
+  max_active_probes: 120,
+  active_probe: true,
+};
+
 const initialMetrics = {
   scanned_total: "-",
   matched_total: "-",
@@ -15,21 +24,10 @@ function toNum(value) {
   return Number.isFinite(value) ? String(value) : "-";
 }
 
-function parseNum(value, fallback) {
-  const n = Number(value);
-  return Number.isFinite(n) ? n : fallback;
-}
-
 export default function HomePage() {
   const [form, setForm] = useState({
     management_url: "",
     management_token: "",
-    management_timeout: "15",
-    probe_timeout: "8",
-    probe_workers: "12",
-    delete_workers: "8",
-    max_active_probes: "120",
-    active_probe: true,
   });
   const [running, setRunning] = useState(false);
   const [status, setStatus] = useState({ text: "等待执行", kind: "" });
@@ -52,14 +50,8 @@ export default function HomePage() {
       const d = data.defaults || {};
       setForm((prev) => ({
         ...prev,
-        management_url: d.management_url || "",
+        management_url: "",
         management_token: d.management_token || "",
-        management_timeout: String(d.management_timeout ?? 15),
-        probe_timeout: String(d.probe_timeout ?? 8),
-        probe_workers: String(d.probe_workers ?? 12),
-        delete_workers: String(d.delete_workers ?? 8),
-        max_active_probes: String(d.max_active_probes ?? 120),
-        active_probe: !!d.active_probe,
       }));
     } catch (err) {
       setStatus({ text: `加载默认配置失败: ${err.message}`, kind: "err" });
@@ -77,12 +69,12 @@ export default function HomePage() {
       const payload = {
         management_url: form.management_url.trim(),
         management_token: form.management_token.trim(),
-        management_timeout: parseNum(form.management_timeout, 15),
-        probe_timeout: parseNum(form.probe_timeout, 8),
-        probe_workers: parseNum(form.probe_workers, 12),
-        delete_workers: parseNum(form.delete_workers, 8),
-        max_active_probes: parseNum(form.max_active_probes, 120),
-        active_probe: !!form.active_probe,
+        management_timeout: FIXED_CONFIG.management_timeout,
+        probe_timeout: FIXED_CONFIG.probe_timeout,
+        probe_workers: FIXED_CONFIG.probe_workers,
+        delete_workers: FIXED_CONFIG.delete_workers,
+        max_active_probes: FIXED_CONFIG.max_active_probes,
+        active_probe: FIXED_CONFIG.active_probe,
       };
 
       const resp = await fetch(apiUrl("/api/cleanup"), {
@@ -123,8 +115,7 @@ export default function HomePage() {
   return (
     <main className="shell">
       <section className="hero">
-        <h1>CPA Cleanup Console</h1>
-        <p>Next.js 美化版控制台，保留原有清理能力，优化视觉与交互。</p>
+        <h1>小呆- CPA -账户清理工具</h1>
       </section>
 
       <section className="grid">
@@ -132,93 +123,25 @@ export default function HomePage() {
           <h2>执行配置</h2>
 
           <div className="field">
-            <label htmlFor="management_url">Management URL</label>
+            <label htmlFor="management_url">cpa 入口（例如 http://127.0.0.1:8317/management.html）</label>
             <input
               id="management_url"
               type="text"
               value={form.management_url}
               onChange={(e) => onChange("management_url", e.target.value)}
-              placeholder="http://127.0.0.1:8317/management.html"
+              placeholder="必填"
             />
           </div>
 
           <div className="field">
-            <label htmlFor="management_token">Management Token</label>
+            <label htmlFor="management_token">cpa登录密码</label>
             <input
               id="management_token"
-              type="password"
+              type="text"
               value={form.management_token}
               onChange={(e) => onChange("management_token", e.target.value)}
               placeholder="不带 Bearer"
             />
-          </div>
-
-          <div className="row">
-            <div className="field">
-              <label htmlFor="management_timeout">管理接口超时（秒）</label>
-              <input
-                id="management_timeout"
-                type="number"
-                min="1"
-                value={form.management_timeout}
-                onChange={(e) => onChange("management_timeout", e.target.value)}
-              />
-            </div>
-            <div className="field">
-              <label htmlFor="probe_timeout">探测超时（秒）</label>
-              <input
-                id="probe_timeout"
-                type="number"
-                min="1"
-                value={form.probe_timeout}
-                onChange={(e) => onChange("probe_timeout", e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div className="row">
-            <div className="field">
-              <label htmlFor="probe_workers">探测并发</label>
-              <input
-                id="probe_workers"
-                type="number"
-                min="1"
-                value={form.probe_workers}
-                onChange={(e) => onChange("probe_workers", e.target.value)}
-              />
-            </div>
-            <div className="field">
-              <label htmlFor="delete_workers">删除并发</label>
-              <input
-                id="delete_workers"
-                type="number"
-                min="1"
-                value={form.delete_workers}
-                onChange={(e) => onChange("delete_workers", e.target.value)}
-              />
-            </div>
-          </div>
-
-          <div className="row">
-            <div className="field">
-              <label htmlFor="max_active_probes">最大探测数量（0=不探测）</label>
-              <input
-                id="max_active_probes"
-                type="number"
-                min="0"
-                value={form.max_active_probes}
-                onChange={(e) => onChange("max_active_probes", e.target.value)}
-              />
-            </div>
-            <div className="field inline">
-              <input
-                id="active_probe"
-                type="checkbox"
-                checked={form.active_probe}
-                onChange={(e) => onChange("active_probe", e.target.checked)}
-              />
-              <label htmlFor="active_probe">开启主动探测</label>
-            </div>
           </div>
 
           <div className="actions">
@@ -241,6 +164,7 @@ export default function HomePage() {
           </div>
 
           <div className="hint">当前为 Next 全栈模式，前后端同域部署。</div>
+          <div className="hint">系统固定参数：管理超时15秒、探测超时8秒、探测并发12、删除并发8、最大探测120、主动探测开启。</div>
         </section>
 
         <section className="panel">
