@@ -7,6 +7,10 @@ Next.js 全栈美化版，API 与前端都在同一个项目：
 - `GET /api/defaults`
 - `POST /api/cleanup`
 
+## 一键部署到 Vercel
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/xn030523/cpa-clean)
+
 ## 仓库说明
 
 这个仓库是「小呆 - CPA 账户清理工具」的完整源码仓库，用于：
